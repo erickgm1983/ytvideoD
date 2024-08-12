@@ -1,201 +1,180 @@
 @echo off
+title Descarga y Conversión de Videos
 setlocal enabledelayedexpansion
 
-:: Archivos ejecutables necesarios
-set FFMPEG=ffmpeg.exe
-set YTDLP=yt-dlp.exe
-set TOR=tor.exe
+REM Verificar la existencia de los archivos ejecutables
+if not exist "yt-dlp.exe" (
+    echo ERROR: yt-dlp no encontrado.
+    echo Descarga yt-dlp desde: https://github.com/yt-dlp/yt-dlp
+    pause
+    exit /b
+)
 
-:: Folders para almacenar los videos descargados y convertidos
-set MP4_FOLDER=Mp4
-set MKV_FOLDER=mkv
-set MP3_FOLDER=Mp3
-set CONVERT_FOLDER=Convertir
+if not exist "ffmpeg.exe" (
+    echo ERROR: ffmpeg no encontrado.
+    echo Descarga ffmpeg desde: https://www.ffmpeg.org
+    pause
+    exit /b
+)
 
-:: Crear las carpetas si no existen
-if not exist "%MP4_FOLDER%" mkdir "%MP4_FOLDER%"
-if not exist "%MKV_FOLDER%" mkdir "%MKV_FOLDER%"
-if not exist "%MP3_FOLDER%" mkdir "%MP3_FOLDER%"
-if not exist "%CONVERT_FOLDER%" mkdir "%CONVERT_FOLDER%"
+if not exist "tor.exe" (
+    echo ERROR: tor no encontrado.
+    echo Descarga Tor desde: https://www.torproject.org/download/tor/
+    pause
+    exit /b
+)
 
-:: Menu de opciones
+REM Comprobar si existen las carpetas necesarias
+if not exist "Mp4" mkdir Mp4
+if not exist "mp3" mkdir mp3
+if not exist "mkv" mkdir mkv
+
 :MENU
 cls
-echo creado por erickgm1983@gmail.com
 echo #######################################
-echo MENU 
+echo                MENU
 echo #######################################
-echo 1 Descargar un video
-echo 2 Descargar un video con Tor
-echo 3 Convertir todos los videos dentro de la carpeta Convertir
-echo 4 Salir
-echo.
-set /p OPTION=Seleccione una opcion:
-
-if "%OPTION%"=="1" goto DOWNLOAD
-if "%OPTION%"=="2" goto DOWNLOAD_TOR
-if "%OPTION%"=="3" goto CONVERT_ALL
-if "%OPTION%"=="4" exit /b
-
-:: Opción para descargar video
-:DOWNLOAD
-cls
-echo ######################################
-echo Descargar un video
-echo ######################################
-set /p URL=Pegue aquí el enlace para la descarga del video y presione enter:
-
-:: Obtener las calidades disponibles
-for /f "tokens=1-2" %%i in ('%YTDLP% -F %URL%') do (
-    set FORMAT_ID=%%i
-    set RESOLUTION=%%j
-
-    :: Verificar las calidades disponibles basadas en los IDs
-    if "!FORMAT_ID!"=="397" set SD_AVAILABLE=1
-    if "!FORMAT_ID!"=="398" set HD_AVAILABLE=1
-    if "!FORMAT_ID!"=="399" set FULLHD_AVAILABLE=1
-    if "!FORMAT_ID!"=="400" set _2K_AVAILABLE=1
-    if "!FORMAT_ID!"=="401" set _4K_AVAILABLE=1
-)
-
-cls
+echo 1. Descargar un video
+echo 2. Convertir un video
+echo 3. Descargar un video usando Tor
+echo 4. Descargar una lista de videos
+echo 0. Salir
 echo #######################################
-echo Formatos Disponibles
-echo #######################################
-echo 0 Best
+set /p choice="Selecciona una opción: "
 
-if defined SD_AVAILABLE echo 2 SD (480p)
-if defined HD_AVAILABLE echo 3 HD (720p)
-if defined FULLHD_AVAILABLE echo 4 Full-HD (1080p)
-if defined _2K_AVAILABLE echo 5 2K (1440p)
-if defined _4K_AVAILABLE echo 6 4K (2160p)
-echo.
-
-set /p FORMAT_OPTION=Ingrese el número de la calidad para descargar:
-
-:: Asignar el ID correspondiente según la selección
-if "%FORMAT_OPTION%"=="0" set FORMAT_ID=best
-if "%FORMAT_OPTION%"=="2" set FORMAT_ID=397
-if "%FORMAT_OPTION%"=="3" set FORMAT_ID=398
-if "%FORMAT_OPTION%"=="4" set FORMAT_ID=399
-if "%FORMAT_OPTION%"=="5" set FORMAT_ID=400
-if "%FORMAT_OPTION%"=="6" set FORMAT_ID=401
-
-:: Descargar el video con la calidad seleccionada, incluyendo subtítulos y miniatura
-%YTDLP% -f %FORMAT_ID%+bestaudio --embed-subs --embed-thumbnail %URL% -o "%MP4_FOLDER%/%%(title)s.%%(ext)s"
-
-goto CONVERT_TO_MKV
-
-:: Opción para descargar video con Tor
-:DOWNLOAD_TOR
-cls
-echo ######################################
-echo Descargar un video con Tor
-echo ######################################
-set /p URL=Pegue aquí el enlace para la descarga del video y presione enter:
-
-:: Iniciar Tor y esperar a que se conecte al proxy
-start %TOR%
-timeout /t 20 >nul
-
-:: Obtener las calidades disponibles a través de Tor
-for /f "tokens=1-2" %%i in ('%YTDLP% --proxy socks5://127.0.0.1:9050 -F %URL%') do (
-    set FORMAT_ID=%%i
-    set RESOLUTION=%%j
-
-    :: Verificar las calidades disponibles basadas en los IDs
-    if "!FORMAT_ID!"=="397" set SD_AVAILABLE=1
-    if "!FORMAT_ID!"=="398" set HD_AVAILABLE=1
-    if "!FORMAT_ID!"=="399" set FULLHD_AVAILABLE=1
-    if "!FORMAT_ID!"=="400" set _2K_AVAILABLE=1
-    if "!FORMAT_ID!"=="401" set _4K_AVAILABLE=1
-)
-
-cls
-echo #######################################
-echo Formatos Disponibles a través de Tor
-echo #######################################
-echo 0 Best
-
-if defined SD_AVAILABLE echo 2 SD (480p)
-if defined HD_AVAILABLE echo 3 HD (720p)
-if defined FULLHD_AVAILABLE echo 4 Full-HD (1080p)
-if defined _2K_AVAILABLE echo 5 2K (1440p)
-if defined _4K_AVAILABLE echo 6 4K (2160p)
-echo.
-
-set /p FORMAT_OPTION=Ingrese el número de la calidad para descargar:
-
-:: Asignar el ID correspondiente según la selección
-if "%FORMAT_OPTION%"=="0" set FORMAT_ID=best
-if "%FORMAT_OPTION%"=="2" set FORMAT_ID=397
-if "%FORMAT_OPTION%"=="3" set FORMAT_ID=398
-if "%FORMAT_OPTION%"=="4" set FORMAT_ID=399
-if "%FORMAT_OPTION%"=="5" set FORMAT_ID=400
-if "%FORMAT_OPTION%"=="6" set FORMAT_ID=401
-
-:: Descargar el video con la calidad seleccionada, incluyendo subtítulos y miniatura, a través de Tor
-%YTDLP% --proxy socks5://127.0.0.1:9050 -f %FORMAT_ID%+bestaudio --embed-subs --embed-thumbnail %URL% -o "%MP4_FOLDER%/%%(title)s.%%(ext)s"
-
-goto CONVERT_TO_MKV
-
-:: Convertir a MKV
-:CONVERT_TO_MKV
-cls
-echo ######################################
-echo Convertir videos a MKV
-echo ######################################
-
-for %%f in ("%MP4_FOLDER%\*.mp4") do (
-    %FFMPEG% -i "%%f" -c copy -map 0 "%MKV_FOLDER%\%%~nf.mkv"
-)
-
-echo Conversion a MKV completada.
+if "%choice%"=="1" goto DescargarVideo
+if "%choice%"=="2" goto ConvertirVideo
+if "%choice%"=="3" goto DescargarConTor
+if "%choice%"=="4" goto DescargarLista
+if "%choice%"=="0" exit
 goto MENU
 
-:: Opción para convertir todos los videos en la carpeta "Convertir"
-:CONVERT_ALL
+:DescargarVideo
 cls
 echo ######################################
-echo Convertir todos los videos en la carpeta Convertir
+echo           Descargar un video
 echo ######################################
-echo Asegúrese de que todos los archivos que desea convertir estén dentro de la carpeta "%CONVERT_FOLDER%"
-echo.
+set /p url="Presione (Control + V) para pegar el enlace para la descarga del video y presione Enter: "
 
-:: Mostrar opciones de formato
-echo 1. Convertir a MP4
-echo 2. Convertir a MKV
-echo 3. Convertir a MP3
-echo.
-set /p FORMAT_OPTION=Seleccione el formato de salida:
+REM Obtener la lista de formatos disponibles
+yt-dlp -F "%url%" > formats.txt
 
-:: Asignar la carpeta de destino según la selección
-if "%FORMAT_OPTION%"=="1" (
-    set FORMAT=mp4
-    set DEST_FOLDER=%MP4_FOLDER%
-) else if "%FORMAT_OPTION%"=="2" (
-    set FORMAT=mkv
-    set DEST_FOLDER=%MKV_FOLDER%
-) else if "%FORMAT_OPTION%"=="3" (
-    set FORMAT=mp3
-    set DEST_FOLDER=%MP3_FOLDER%
-) else (
-    echo Opción no válida.
-    pause
-    goto CONVERT_ALL
+REM Verificar las calidades disponibles
+set SD_AVAILABLE=0
+set HD_AVAILABLE=0
+set FULLHD_AVAILABLE=0
+set _2K_AVAILABLE=0
+set _4K_AVAILABLE=0
+
+for /f "tokens=1,2" %%a in (formats.txt) do (
+    set FORMAT_ID=%%a
+    if "!FORMAT_ID!"=="397" set SD_AVAILABLE=1
+    if "!FORMAT_ID!"=="398" set HD_AVAILABLE=1
+    if "!FORMAT_ID!"=="399" set FULLHD_AVAILABLE=1
+    if "!FORMAT_ID!"=="400" set _2K_AVAILABLE=1
+    if "!FORMAT_ID!"=="401" set _4K_AVAILABLE=1
 )
 
-:: Convertir todos los archivos en la carpeta "Convertir"
-for %%f in ("%CONVERT_FOLDER%\*.*") do (
-    if not "%%~xf"==".%FORMAT%" (
-        if "%FORMAT%"=="mp3" (
-            %FFMPEG% -i "%%f" -q:a 0 -map a "%DEST_FOLDER%\%%~nf.%FORMAT%"
-        ) else (
-            %FFMPEG% -i "%%f" -c:v libx264 -crf 23 -preset medium -c:a aac -strict experimental "%DEST_FOLDER%\%%~nf.%FORMAT%"
-        )
-    )
+del formats.txt
+
+REM Generar el menú de formatos disponibles
+echo 0. Best
+set index=1
+set FORMAT_LIST=bestvideo+bestaudio/
+
+if %SD_AVAILABLE%==1 (
+    echo !index!. SD
+    set FORMAT_LIST=!FORMAT_LIST!397/
+    set /a index+=1
+)
+if %HD_AVAILABLE%==1 (
+    echo !index!. HD
+    set FORMAT_LIST=!FORMAT_LIST!398/
+    set /a index+=1
+)
+if %FULLHD_AVAILABLE%==1 (
+    echo !index!. Full-HD
+    set FORMAT_LIST=!FORMAT_LIST!399/
+    set /a index+=1
+)
+if %_2K_AVAILABLE%==1 (
+    echo !index!. 2K
+    set FORMAT_LIST=!FORMAT_LIST!400/
+    set /a index+=1
+)
+if %_4K_AVAILABLE%==1 (
+    echo !index!. 4K
+    set FORMAT_LIST=!FORMAT_LIST!401/
+    set /a index+=1
 )
 
-echo Conversion a %FORMAT% completada.
+set /p quality="Ingrese el número de la calidad para descargar: "
+if "%quality%"=="0" set "FORMAT_TO_DOWNLOAD=bestvideo+bestaudio"
+if not "%quality%"=="0" set "FORMAT_TO_DOWNLOAD=!FORMAT_LIST:~0,-1!"
+
+REM Descargar el video con la calidad seleccionada, mejor audio, subtítulos, thumbnails y todos los idiomas
+yt-dlp -f "%FORMAT_TO_DOWNLOAD%" --write-sub --write-auto-sub --embed-subs --sub-lang en,es --write-thumbnail --embed-thumbnail --add-metadata --merge-output-format mkv "%url%" -o "mkv\%%(title)s.%%(ext)s" --audio-multistreams
+
+echo.
+echo ¡Descarga completada exitosamente!
+pause
+goto MENU
+
+:ConvertirVideo
+cls
+echo ######################
+echo     Convertir un video
+echo ######################
+echo Por favor ingrese su video dentro del folder Mkv
+echo y seleccione el formato al cual desea convertir
+echo 0. Salir al menu principal
+echo 1. mp4
+echo 2. mov
+echo 3. mp3
+
+set /p format_choice="Seleccione un formato: "
+if "%format_choice%"=="0" goto MENU
+
+REM Realizar la conversión según la selección
+for %%i in ("mkv\*.mkv") do (
+    if "%format_choice%"=="1" ffmpeg -i "%%i" -c copy "Mp4\%%~ni.mp4"
+    if "%format_choice%"=="2" ffmpeg -i "%%i" -c copy "Mp4\%%~ni.mov"
+    if "%format_choice%"=="3" ffmpeg -i "%%i" -vn -acodec copy "mp3\%%~ni.mp3"
+)
+
+echo.
+echo ¡Conversión completada exitosamente!
+pause
+goto MENU
+
+:DescargarConTor
+cls
+echo ######################################
+echo  Descargar un video usando Tor
+echo ######################################
+echo Activando Tor...
+tor.exe
+
+REM Descargar el video a través de Tor
+set /p url="Presione (Control + V) para pegar el enlace para la descarga del video y presione Enter: "
+yt-dlp --proxy socks5://127.0.0.1:9050 -f bestvideo+bestaudio --write-sub --write-auto-sub --embed-subs --sub-lang en,es --write-thumbnail --embed-thumbnail --add-metadata --merge-output-format mkv "%url%" -o "mkv\%%(title)s.%%(ext)s" --audio-multistreams
+
+echo.
+echo ¡Descarga completada usando Tor!
+pause
+goto MENU
+
+:DescargarLista
+cls
+echo ######################################
+echo    Descargar una lista de videos
+echo ######################################
+set /p url="Presione (Control + V) para pegar el enlace de la lista de videos y presione Enter: "
+
+REM Descargar la lista completa en la mejor calidad de video y audio, incluyendo subtítulos y thumbnails
+yt-dlp -f bestvideo+bestaudio --yes-playlist --write-sub --write-auto-sub --embed-subs --sub-lang en,es --write-thumbnail --embed-thumbnail --add-metadata --merge-output-format mkv "%url%" -o "mkv\%%(playlist)s/%%(title)s.%%(ext)s" --audio-multistreams --min-sleep-interval 10 --max-sleep-interval 30
+
+echo.
+echo ¡Lista de videos descargada exitosamente!
 pause
 goto MENU
