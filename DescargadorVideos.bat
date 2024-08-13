@@ -31,6 +31,7 @@ if not exist "mkv" mkdir mkv
 
 :MENU
 cls
+echo creado por erickgm1983@gmail.com
 echo #######################################
 echo                MENU
 echo #######################################
