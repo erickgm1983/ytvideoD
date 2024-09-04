@@ -51,7 +51,7 @@ set /p opcion=Selecciona una opcion:
 
 rem Procesar la opción seleccionada
 if "%opcion%"=="1" goto :agregar_video
-if "%opcion%"=="2" echo Opción 2 seleccionada
+if "%opcion%"=="2" goto :convertir_contenido
 if "%opcion%"=="3" echo Opción 3 seleccionada
 if "%opcion%"=="4" echo Opción 4 seleccionada
 if "%opcion%"=="5" goto :limpiar_lista
@@ -193,8 +193,53 @@ if "%resolucion%"=="6" (
 
 goto :menu
 
+:convertir_contenido
+rem Mostrar opciones de formatos de conversión
+echo #######################################
+echo ##        FORMATO DE CONVERSIÓN       ##
+echo #######################################
+echo.
+echo 1. Convertir a mp4
+echo 2. Convertir a mkv
+echo 3. Convertir a avi
+echo 4. Convertir a mp3 (solo audio)
+echo 0. Volver al menú principal
+echo.
+set /p formato=Selecciona el formato de conversión: 
+
+if "%formato%"=="0" goto :menu
+
+rem Definir la extensión y opciones de conversión basadas en la selección
+if "%formato%"=="1" set "extension=mp4" & set "opciones=-c:v libx264 -c:a aac"
+if "%formato%"=="2" set "extension=mkv" & set "opciones=-c:v libx264 -c:a aac"
+if "%formato%"=="3" set "extension=avi" & set "opciones=-c:v libxvid -c:a libmp3lame"
+if "%formato%"=="4" set "extension=mp3" & set "opciones=-vn -c:a libmp3lame"
+
+rem Verificar si se seleccionó un formato válido
+if not defined extension goto :convertir_contenido
+
+rem Crear subcarpeta para el formato si no existe
+set "subcarpeta=%directorio%\%extension%"
+if not exist "%subcarpeta%" (
+    mkdir "%subcarpeta%"
+    echo Subcarpeta %subcarpeta% creada.
+)
+
+rem Procesar cada archivo en la carpeta Medios
+for %%A in ("%directorio%\*.*") do (
+    echo Convirtiendo "%%~nxA" a %extension%...
+    ffmpeg -i "%%A" %opciones% "%subcarpeta%\%%~nA.%extension%"
+)
+
+echo Conversión completada.
+goto :menu
+
 :limpiar_lista
-echo Limpiando lista.txt...
-> "%lista%" rem Limpiar el archivo
-echo lista.txt ha sido limpiado.
+rem Limpiar el archivo lista.txt
+if exist "%lista%" (
+    del "%lista%"
+    echo lista.txt ha sido limpiado.
+) else (
+    echo lista.txt no existe.
+)
 goto :menu
