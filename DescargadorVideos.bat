@@ -29,6 +29,7 @@ echo #######################################
 echo ##                                   ##
 echo ##            MENU PRINCIPAL         ##
 echo ##                                   ##
+echo ##     erickgm1983@gmail.com         ##
 echo #######################################
 echo ##                                   ##
 echo ## 1. Agregar un video a la lista    ##
