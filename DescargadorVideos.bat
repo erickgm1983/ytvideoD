@@ -36,12 +36,10 @@ echo ##                                   ##
 echo ## 2. Convertir el contenido de la   ##
 echo ##    carpeta Medios                 ##
 echo ##                                   ##
-echo ## 3. Descargar mp3                  ##
-echo ##                                   ##
-echo ## 4. Descargar videos de la lista   ##
+echo ## 3. Descargar videos de la lista   ##
 echo ##    usando Tor                     ##
 echo ##                                   ##
-echo ## 5. Limpiar lista                  ##
+echo ## 4. Limpiar lista                  ##
 echo ##                                   ##
 echo ## 0. Salir                          ##
 echo ##                                   ##
@@ -52,9 +50,8 @@ set /p opcion=Selecciona una opcion:
 rem Procesar la opción seleccionada
 if "%opcion%"=="1" goto :agregar_video
 if "%opcion%"=="2" goto :convertir_contenido
-if "%opcion%"=="3" echo Opción 3 seleccionada
-if "%opcion%"=="4" echo Opción 4 seleccionada
-if "%opcion%"=="5" goto :limpiar_lista
+if "%opcion%"=="3" goto :descargar_videos
+if "%opcion%"=="4" goto :limpiar_lista
 if "%opcion%"=="0" exit /b
 
 goto :menu
@@ -145,6 +142,9 @@ if not "!available_4k!"=="" (
     set /a counter+=1
 )
 
+echo !counter!. Descargar solo audio en formato mp3
+set /a counter+=1
+
 echo !counter!. Descargar la mejor calidad disponible
 set /a counter+=1
 
@@ -186,6 +186,12 @@ if "%resolucion%"=="5" (
 )
 
 if "%resolucion%"=="6" (
+    echo Descargando solo audio en formato mp3...
+    yt-dlp -f "bestaudio" --extract-audio --audio-format mp3 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    goto :menu
+)
+
+if "%resolucion%"=="7" (
     echo Descargando la mejor calidad disponible...
     yt-dlp -f "bestvideo+bestaudio" -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
@@ -221,17 +227,25 @@ if not defined extension goto :convertir_contenido
 rem Crear subcarpeta para el formato si no existe
 set "subcarpeta=%directorio%\%extension%"
 if not exist "%subcarpeta%" (
+    echo Creando subcarpeta para %extension%...
     mkdir "%subcarpeta%"
-    echo Subcarpeta %subcarpeta% creada.
 )
 
-rem Procesar cada archivo en la carpeta Medios
-for %%A in ("%directorio%\*.*") do (
-    echo Convirtiendo "%%~nxA" a %extension%...
-    ffmpeg -i "%%A" %opciones% "%subcarpeta%\%%~nA.%extension%"
+rem Procesar todos los archivos en la carpeta "Medios"
+for %%f in ("%directorio%\*.*") do (
+    ffmpeg -i "%%f" %opciones% "%subcarpeta%\%%~nf.%extension%"
 )
 
-echo Conversión completada.
+echo Conversión completada. Los archivos convertidos se han guardado en %subcarpeta%.
+goto :menu
+
+:descargar_videos
+rem Descargar videos de la lista usando Tor
+echo Descargando videos usando Tor...
+for /f "usebackq delims=" %%a in ("%lista%") do (
+    tor.exe -d
+    yt-dlp --proxy socks5://127.0.0.1:9050 -f bestvideo+bestaudio -o "%directorio%\%%(title)s.%%(ext)s" %%a
+)
 goto :menu
 
 :limpiar_lista
