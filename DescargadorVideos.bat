@@ -20,6 +20,7 @@ if not exist "%directorio%" (
 )
 
 :menu
+cls
 rem Limpiar la lista si ya existe
 if exist "%lista%" (
     echo Creado por: ErickGM@gmail.com
