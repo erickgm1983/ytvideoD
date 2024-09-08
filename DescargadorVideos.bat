@@ -8,12 +8,7 @@ set "lista=%~dp0lista.txt"
 rem Definir archivos a verificar
 set "archivos=ffmpeg.exe ffplay.exe ffprobe.exe tor.exe yt-dlp.exe"
 
-rem Limpiar la lista si ya existe
-if exist "%lista%" (
-    echo Limpiando lista.txt...
-    > "%lista%" rem Limpiar el archivo
-    echo lista.txt ha sido limpiado.
-)
+
 
 rem Verificar si la carpeta existe, si no, crearla
 if not exist "%directorio%" (
@@ -25,22 +20,28 @@ if not exist "%directorio%" (
 )
 
 :menu
+rem Limpiar la lista si ya existe
+if exist "%lista%" (
+    echo Creado por: ErickGM@gmail.com
+    > "%lista%" rem Limpiar el archivo
+    echo Paypal: 
+    echo "https://www.paypal.com/paypalme/eidosred?country.x=HN&locale.x=es_XC"
+)
 echo #######################################
 echo ##                                   ##
 echo ##            MENU PRINCIPAL         ##
 echo ##                                   ##
-echo ##     erickgm1983@gmail.com         ##
 echo #######################################
 echo ##                                   ##
-echo ## 1. Agregar un video a la lista    ##
+echo ## 1. Descargar un video             ##
 echo ##                                   ##
 echo ## 2. Convertir el contenido de la   ##
 echo ##    carpeta Medios                 ##
 echo ##                                   ##
-echo ## 3. Descargar videos de la lista   ##
+echo ## 3. Descargar videos               ##
 echo ##    usando Tor                     ##
 echo ##                                   ##
-echo ## 4. Limpiar lista                  ##
+echo ##                                   ##
 echo ##                                   ##
 echo ## 0. Salir                          ##
 echo ##                                   ##
@@ -258,3 +259,4 @@ if exist "%lista%" (
     echo lista.txt no existe.
 )
 goto :menu
+
