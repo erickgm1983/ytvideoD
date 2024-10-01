@@ -63,13 +63,11 @@ goto :menu
 rem Solicitar al usuario el enlace para agregar
 set /p enlace=Introduce el enlace del video: 
 
-rem Agregar el enlace al archivo lista.txt, rodeado de comillas
+rem Agregar el enlace al archivo lista.txt
 echo "%enlace%" >> "%lista%"
 
 echo Enlace agregado a lista.txt.
 
-rem Verificar formatos disponibles usando yt-dlp
-yt-dlp --list-formats "%enlace%" > "%temp%\formats.txt"
 
 rem Definir listas de formatos
 set "formats_sd=278 394 160 603 242 395 133 604"
@@ -79,78 +77,19 @@ set "formats_2k=271 400 620"
 set "formats_4k=313 401 625"
 set "formats_best=best"
 
-rem Inicializar variables de selección
-set "available_sd="
-set "available_hd="
-set "available_fullhd="
-set "available_2k="
-set "available_4k="
-set "selected_format="
-
-rem Filtrar disponibles formatos
-for %%F in (%formats_sd%) do (
-    findstr /c:"%%F" "%temp%\formats.txt" >nul && set "available_sd=SD (480p y menos)" && set "selected_format=bestvideo[height<=480]+bestaudio"
-)
-
-for %%F in (%formats_hd%) do (
-    findstr /c:"%%F" "%temp%\formats.txt" >nul && set "available_hd=HD (720p)" && set "selected_format=bestvideo[height<=720]+bestaudio"
-)
-
-for %%F in (%formats_fullhd%) do (
-    findstr /c:"%%F" "%temp%\formats.txt" >nul && set "available_fullhd=Full HD (1080p)" && set "selected_format=bestvideo[height<=1080]+bestaudio"
-)
-
-for %%F in (%formats_2k%) do (
-    findstr /c:"%%F" "%temp%\formats.txt" >nul && set "available_2k=2K (1440p)" && set "selected_format=bestvideo[height<=1440]+bestaudio"
-)
-
-for %%F in (%formats_4k%) do (
-    findstr /c:"%%F" "%temp%\formats.txt" >nul && set "available_4k=4K (2160p)" && set "selected_format=bestvideo[height<=2160]+bestaudio"
-)
-
-if exist "%temp%\formats.txt" (
-    del "%temp%\formats.txt"
-)
 
 rem Generar menú dinámico basado en los formatos disponibles
-echo #######################################
-echo ##          FORMATO DISPONIBLE        ##
-echo #######################################
+echo ###############################################
+echo ## PREFERENCIA DE FORMATO SI ESTA DISPONIBLE ##
+echo ###############################################
 echo.
-
-set "counter=1"
-
-if not "!available_sd!"=="" (
-    echo !counter!. !available_sd!
-    set /a counter+=1
-)
-
-if not "!available_hd!"=="" (
-    echo !counter!. !available_hd!
-    set /a counter+=1
-)
-
-if not "!available_fullhd!"=="" (
-    echo !counter!. !available_fullhd!
-    set /a counter+=1
-)
-
-if not "!available_2k!"=="" (
-    echo !counter!. !available_2k!
-    set /a counter+=1
-)
-
-if not "!available_4k!"=="" (
-    echo !counter!. !available_4k!
-    set /a counter+=1
-)
-
-echo !counter!. Descargar solo audio en formato mp3
-set /a counter+=1
-
-echo !counter!. Descargar la mejor calidad disponible
-set /a counter+=1
-
+echo 1. SD 480p
+echo 2. HD 720p
+echo 3. Full HD 1080p
+echo 4. 2K 1140p
+echo 5. 4k 2160p
+echo 6. Audio mp3
+echo 7. Descargar la mejor calidad disponible
 echo 0. Volver al menú principal
 echo.
 set /p resolucion=Selecciona una opción:
@@ -160,43 +99,43 @@ if "%resolucion%"=="0" goto :menu
 
 if "%resolucion%"=="1" (
     echo Descargando SD...
-    yt-dlp -f "bestvideo[height<=480]+bestaudio" -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo[height<=480]+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="2" (
     echo Descargando HD...
-    yt-dlp -f "bestvideo[height<=720]+bestaudio" -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo[height<=720]+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="3" (
     echo Descargando Full HD...
-    yt-dlp -f "bestvideo[height<=1080]+bestaudio" -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo[height<=1080]+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="4" (
     echo Descargando 2K...
-    yt-dlp -f "bestvideo[height<=1440]+bestaudio" -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo[height<=1440]+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="5" (
     echo Descargando 4K...
-    yt-dlp -f "bestvideo[height<=2160]+bestaudio" -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo[height<=2160]+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="6" (
     echo Descargando solo audio en formato mp3...
-    yt-dlp -f "bestaudio" --extract-audio --audio-format mp3 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestaudio" --sleep-interval 5 --extract-audio --audio-format mp3 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="7" (
     echo Descargando la mejor calidad disponible...
-    yt-dlp -f "bestvideo+bestaudio" -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" -a lista
     goto :menu
 )
 
@@ -247,7 +186,7 @@ rem Descargar videos de la lista usando Tor
 echo Descargando videos usando Tor...
 for /f "usebackq delims=" %%a in ("%lista%") do (
     tor.exe -d
-    yt-dlp --proxy socks5://127.0.0.1:9050 -f bestvideo+bestaudio -o "%directorio%\%%(title)s.%%(ext)s" %%a
+    yt-dlp --sleep-interval 5 --proxy socks5://127.0.0.1:9050 -f bestvideo+bestaudio -o "%directorio%\%%(title)s.%%(ext)s" %%a
 )
 goto :menu
 
@@ -260,4 +199,3 @@ if exist "%lista%" (
     echo lista.txt no existe.
 )
 goto :menu
-
