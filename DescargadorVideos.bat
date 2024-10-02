@@ -3,12 +3,9 @@ setlocal enabledelayedexpansion
 
 rem Obtener el directorio del script
 set "directorio=%~dp0Medios"
-set "lista=%~dp0lista.txt"
 
 rem Definir archivos a verificar
 set "archivos=ffmpeg.exe ffplay.exe ffprobe.exe tor.exe yt-dlp.exe"
-
-
 
 rem Verificar si la carpeta existe, si no, crearla
 if not exist "%directorio%" (
@@ -21,53 +18,39 @@ if not exist "%directorio%" (
 
 :menu
 cls
-rem Limpiar la lista si ya existe
-if exist "%lista%" (
-    echo Creado por: ErickGM@gmail.com
-    > "%lista%" rem Limpiar el archivo
-    echo Paypal: 
-    echo "https://www.paypal.com/paypalme/eidosred?country.x=HN&locale.x=es_XC"
-)
-echo #######################################
-echo ##                                   ##
-echo ##            MENU PRINCIPAL         ##
-echo ##                                   ##
-echo #######################################
-echo ##                                   ##
-echo ## 1. Descargar un video             ##
-echo ##                                   ##
-echo ## 2. Convertir el contenido de la   ##
-echo ##    carpeta Medios                 ##
-echo ##                                   ##
-echo ## 3. Descargar videos               ##
-echo ##    usando Tor                     ##
-echo ##                                   ##
-echo ##                                   ##
-echo ##                                   ##
-echo ## 0. Salir                          ##
-echo ##                                   ##
-echo #######################################
+echo .
+
+echo .
+echo Paypal: 
+echo "https://www.paypal.com/paypalme/eidosred?country.x=HN&locale.x=es_XC"
+echo .
+echo "================== MENU PRINCIPAL =================="
+echo "#                                                   #"
+echo "#      1. Descargar un video                        #"
+echo "#                                                   #"
+echo "#      2. Convertir el contenido de la carpeta      #"
+echo "#         Medios                                    #"
+echo "#                                                   #"
+echo "#      3. Descargar videos usando Tor               #"
+echo "#                                                   #"
+echo "#      0. Salir                                     #"
+echo "#                                                   #"
+echo "====================================================="
 echo.
 set /p opcion=Selecciona una opcion: 
 
-rem Procesar la opción seleccionada
+rem Procesar la opcion seleccionada
 if "%opcion%"=="1" goto :agregar_video
 if "%opcion%"=="2" goto :convertir_contenido
 if "%opcion%"=="3" goto :descargar_videos
-if "%opcion%"=="4" goto :limpiar_lista
 if "%opcion%"=="0" exit /b
 
 goto :menu
 
 :agregar_video
-rem Solicitar al usuario el enlace para agregar
+cls
+rem Solicitar al usuario el enlace para descargar
 set /p enlace=Introduce el enlace del video: 
-
-rem Agregar el enlace al archivo lista.txt
-echo "%enlace%" >> "%lista%"
-
-echo Enlace agregado a lista.txt.
-
 
 rem Definir listas de formatos
 set "formats_sd=278 394 160 603 242 395 133 604"
@@ -77,93 +60,117 @@ set "formats_2k=271 400 620"
 set "formats_4k=313 401 625"
 set "formats_best=best"
 
-
-rem Generar menú dinámico basado en los formatos disponibles
-echo ###############################################
-echo ## PREFERENCIA DE FORMATO SI ESTA DISPONIBLE ##
-echo ###############################################
+rem Generar menu dinamico basado en los formatos disponibles
+echo .
+echo "   erickgm1983@gmail.com   "
+echo "###################################################"
+echo "## PREFERENCIA DE FORMATO SI ESTA DISPONIBLE      ##"
+echo "###################################################"
+echo .  En caso de no estar disponible buscara un formato menor
+echo "================= Selecciona una opcion =================="
+echo "|                                                       |"
+echo "| 1. SD 480p                                            |"
+echo "| 2. HD 720p                                            |"
+echo "| 3. Full HD 1080p                                      |"
+echo "| 4. 2K 1440p                                           |"
+echo "| 5. 4K 2160p                                           |"
+echo "| 6. Audio mp3                                          |"
+echo "| 7. Descargar la mejor calidad disponible              |"
+echo "| 8. Descargar Predeterminado                           |"
+echo "| 0. Volver al menu principal                           |"
+echo "========================================================="
 echo.
-echo 1. SD 480p
-echo 2. HD 720p
-echo 3. Full HD 1080p
-echo 4. 2K 1140p
-echo 5. 4k 2160p
-echo 6. Audio mp3
-echo 7. Descargar la mejor calidad disponible
-echo 0. Volver al menú principal
-echo.
-set /p resolucion=Selecciona una opción:
+set /p resolucion=Selecciona una opcion:
 
-rem Procesar la opción seleccionada
+rem Procesar la opcion seleccionada
 if "%resolucion%"=="0" goto :menu
 
 if "%resolucion%"=="1" (
     echo Descargando SD...
-    yt-dlp -f "bestvideo[height<=480]+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    set /a "random_interval=5 + %RANDOM% %% 16"
+    yt-dlp -f "bestvideo[height<=480]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="2" (
     echo Descargando HD...
-    yt-dlp -f "bestvideo[height<=720]+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    set /a "random_interval=5 + %RANDOM% %% 16"
+    yt-dlp -f "bestvideo[height<=720]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="3" (
     echo Descargando Full HD...
-    yt-dlp -f "bestvideo[height<=1080]+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    set /a "random_interval=5 + %RANDOM% %% 16"
+    yt-dlp -f "bestvideo[height<=1080]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="4" (
     echo Descargando 2K...
-    yt-dlp -f "bestvideo[height<=1440]+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    set /a "random_interval=5 + %RANDOM% %% 16"
+    yt-dlp -f "bestvideo[height<=1440]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="5" (
     echo Descargando 4K...
-    yt-dlp -f "bestvideo[height<=2160]+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    set /a "random_interval=5 + %RANDOM% %% 16"
+    yt-dlp -f "bestvideo[height<=2160]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="6" (
     echo Descargando solo audio en formato mp3...
-    yt-dlp -f "bestaudio" --sleep-interval 5 --extract-audio --audio-format mp3 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    set /a "random_interval=5 + %RANDOM% %% 16"
+    yt-dlp -f "bestaudio" --sleep-interval !random_interval! --extract-audio --audio-format mp3 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 if "%resolucion%"=="7" (
     echo Descargando la mejor calidad disponible...
-    yt-dlp -f "bestvideo+bestaudio" --sleep-interval 5 -o "%directorio%\%%(title)s.%%(ext)s" -a lista
+    set /a "random_interval=5 + %RANDOM% %% 16"
+    yt-dlp -f "bestvideo+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    goto :menu
+)
+
+if "%resolucion%"=="8" (
+    echo Descargando la mejor calidad disponible...
+    set /a "random_interval=5 + %RANDOM% %% 16"
+    yt-dlp --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
     goto :menu
 )
 
 goto :menu
 
 :convertir_contenido
-rem Mostrar opciones de formatos de conversión
-echo #######################################
-echo ##        FORMATO DE CONVERSIÓN       ##
-echo #######################################
+cls
+rem Mostrar opciones de formatos de conversion
+echo .
+echo "###################################################"
+echo "##            FORMATO DE CONVERSIoN               ##"
+echo "###################################################"
+echo .
+echo "================ Selecciona el formato ==================="
+echo "|                                                       |"
+echo "| 1. Convertir a mp4                                    |"
+echo "| 2. Convertir a mkv                                    |"
+echo "| 3. Convertir a avi                                    |"
+echo "| 4. Convertir a mp3 (solo audio)                       |"
+echo "| 0. Volver al menu principal                           |"
+echo "========================================================="
 echo.
-echo 1. Convertir a mp4
-echo 2. Convertir a mkv
-echo 3. Convertir a avi
-echo 4. Convertir a mp3 (solo audio)
-echo 0. Volver al menú principal
-echo.
-set /p formato=Selecciona el formato de conversión: 
+set /p formato=Selecciona el formato de conversion: 
 
 if "%formato%"=="0" goto :menu
 
-rem Definir la extensión y opciones de conversión basadas en la selección
+rem Definir la extension y opciones de conversion basadas en la seleccion
 if "%formato%"=="1" set "extension=mp4" & set "opciones=-c:v libx264 -c:a aac"
 if "%formato%"=="2" set "extension=mkv" & set "opciones=-c:v libx264 -c:a aac"
 if "%formato%"=="3" set "extension=avi" & set "opciones=-c:v libxvid -c:a libmp3lame"
 if "%formato%"=="4" set "extension=mp3" & set "opciones=-vn -c:a libmp3lame"
 
-rem Verificar si se seleccionó un formato válido
+rem Verificar si se selecciono un formato valido
 if not defined extension goto :convertir_contenido
 
 rem Crear subcarpeta para el formato si no existe
@@ -178,24 +185,13 @@ for %%f in ("%directorio%\*.*") do (
     ffmpeg -i "%%f" %opciones% "%subcarpeta%\%%~nf.%extension%"
 )
 
-echo Conversión completada. Los archivos convertidos se han guardado en %subcarpeta%.
+echo Conversion completada. Los archivos convertidos se han guardado en %subcarpeta%.
 goto :menu
 
 :descargar_videos
-rem Descargar videos de la lista usando Tor
-echo Descargando videos usando Tor...
-for /f "usebackq delims=" %%a in ("%lista%") do (
-    tor.exe -d
-    yt-dlp --sleep-interval 5 --proxy socks5://127.0.0.1:9050 -f bestvideo+bestaudio -o "%directorio%\%%(title)s.%%(ext)s" %%a
-)
-goto :menu
-
-:limpiar_lista
-rem Limpiar el archivo lista.txt
-if exist "%lista%" (
-    del "%lista%"
-    echo lista.txt ha sido limpiado.
-) else (
-    echo lista.txt no existe.
-)
+cls
+rem Descargar un video usando Tor
+set /p enlace=Introduce el enlace del video para descargar con Tor: 
+echo Descargando video usando Tor...
+yt-dlp --proxy socks5://127.0.0.1:9050 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
 goto :menu
