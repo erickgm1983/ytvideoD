@@ -88,35 +88,35 @@ if "%resolucion%"=="0" goto :menu
 if "%resolucion%"=="1" (
     echo Descargando SD...
     set /a "random_interval=5 + %RANDOM% %% 16"
-    yt-dlp -f "bestvideo[height<=480]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo[height<=480]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "% enlace%" --recode mp4
     goto :menu
 )
 
 if "%resolucion%"=="2" (
     echo Descargando HD...
     set /a "random_interval=5 + %RANDOM% %% 16"
-    yt-dlp -f "bestvideo[height<=720]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo[height<=720]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%" --recode mp4
     goto :menu
 )
 
 if "%resolucion%"=="3" (
     echo Descargando Full HD...
     set /a "random_interval=5 + %RANDOM% %% 16"
-    yt-dlp -f "bestvideo[height<=1080]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo[height<=1080]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%" --recode mp4
     goto :menu
 )
 
 if "%resolucion%"=="4" (
     echo Descargando 2K...
     set /a "random_interval=5 + %RANDOM% %% 16"
-    yt-dlp -f "bestvideo[height<=1440]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo[height<=1440]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%" --recode mp4
     goto :menu
 )
 
 if "%resolucion%"=="5" (
     echo Descargando 4K...
     set /a "random_interval=5 + %RANDOM% %% 16"
-    yt-dlp -f "bestvideo[height<=2160]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo[height<=2160]+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%" --recode mp4
     goto :menu
 )
 
@@ -130,14 +130,14 @@ if "%resolucion%"=="6" (
 if "%resolucion%"=="7" (
     echo Descargando la mejor calidad disponible...
     set /a "random_interval=5 + %RANDOM% %% 16"
-    yt-dlp -f "bestvideo+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp -f "bestvideo+bestaudio" --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%" --recode mp4
     goto :menu
 )
 
 if "%resolucion%"=="8" (
     echo Descargando la mejor calidad disponible...
     set /a "random_interval=5 + %RANDOM% %% 16"
-    yt-dlp --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+    yt-dlp --sleep-interval !random_interval! -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%" --recode mp4
     goto :menu
 )
 
@@ -193,5 +193,5 @@ cls
 rem Descargar un video usando Tor
 set /p enlace=Introduce el enlace del video para descargar con Tor: 
 echo Descargando video usando Tor...
-yt-dlp --proxy socks5://127.0.0.1:9050 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%"
+yt-dlp --proxy socks5://127.0.0.1:9050 -o "%directorio%\%%(title)s.%%(ext)s" "%enlace%" --recode mp4
 goto :menu
